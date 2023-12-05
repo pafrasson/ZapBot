@@ -4,11 +4,23 @@ from urllib.parse import quote
 import webbrowser
 from time import sleep
 import pyautogui
+from tkinter import scrolledtext
+import sys
+from io import StringIO
 
 window = tk.CTk()
-window.geometry("500x400")
+window.geometry("500x500")
 window.title("ZapBot by Frass")
+window.iconbitmap('./assets/mainicon.ico')
 
+class StdoutRedirector:
+    def __init__(self, text_widget):
+        self.text_space = text_widget
+
+    def write(self, message):
+        self.text_space.insert(tk.END, message)
+        self.text_space.see(tk.END)  # Rola automaticamente para a última linha
+        
 
 def selecionar_arquivo():
     selected_archive = filedialog.askopenfilename()
@@ -21,7 +33,18 @@ def selecionar_arquivo():
         print("Nenhum arquivo selecionado")
         
 def custom_msg():
-    pass
+    nova_janela = tk.CTkToplevel(window)
+    nova_janela.geometry("300x300")
+    nova_janela.title("Personalizar mensagem")
+    msg_label = tk.CTkTextbox(nova_janela, width=200, height=200, wrap="word")
+    msg_label.pack(padx=30,pady=30)
+    
+    def save():
+        global texto_global
+        texto_global = msg_label.get("1.0", tk.END)
+        print("texto salvo com sucesso")
+        
+    btn_save = tk.CTkButton(nova_janela, text="Salvar", command=save).pack(padx=10, pady=10)
 
 def iniciar_envio():
     txt = gbl_selected_arquive
@@ -29,8 +52,8 @@ def iniciar_envio():
     for linha in arquivo.readlines():
         if linha == "":
             break
-        print(linha)
-        msg = f'Otimize Seu Negócio de Materiais de Construção com a Astersoft 🚀Olá, sou o Pedro da Astersoft! Nosso sistema é perfeito para gerenciar pedidos, entregas futuras e notas fiscais em seu comércio de materiais de construção. Assista ao vídeo rápido para ver como podemos facilitar a sua vida:'
+        print(f'mensagem enviada para{linha}')
+        msg = texto_global
 
         try:
             link_wpp = f'https://web.whatsapp.com/send?phone={
@@ -48,12 +71,16 @@ def iniciar_envio():
                 arquivo.write(f'{linha}')
 
 
-hellotext = tk.CTkLabel(window, text="Bem vindo!").pack(padx=10, pady=10)
+hellotext = tk.CTkLabel(window, text="Bem vindo!", font=("Arial", 16, "bold")).pack(padx=10, pady=50)
 
 btn_select_arquive = tk.CTkButton(window, text="Importar lista de contatos", command=selecionar_arquivo).pack(padx=10, pady=10)
 
 btn_custom_msg = tk.CTkButton(window, text="Mensagem de envio", command=custom_msg).pack(padx=10, pady=10)
 
 btn_send_msg = tk.CTkButton(window, text="Iniciar envio", command=iniciar_envio).pack(padx=10, pady=10)
+
+text_area = scrolledtext.ScrolledText(window, wrap=tk.WORD, width=40, height=10)
+text_area.pack(padx=10, pady=50)
+sys.stdout = StdoutRedirector(text_area)
 
 window.mainloop()
