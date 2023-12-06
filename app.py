@@ -7,6 +7,7 @@ import pyautogui
 from tkinter import scrolledtext
 import sys
 from io import StringIO
+from selenium import webdriver
 
 window = tk.CTk()
 window.geometry("500x500")
@@ -21,7 +22,10 @@ class StdoutRedirector:
         self.text_space.insert(tk.END, message)
         self.text_space.see(tk.END)  # Rola automaticamente para a última linha
         
-
+def connect_wpp():
+    driver = webdriver.Chrome()
+    driver.get('https://web.whatsapp.com/')
+    
 def selecionar_arquivo():
     selected_archive = filedialog.askopenfilename()
 
@@ -70,6 +74,20 @@ def iniciar_envio():
             with open('erros.txt', 'a', newline='', encoding='utf-8') as arquivo:
                 arquivo.write(f'{linha}')
 
+Button_connectwpp = CTkButton(
+    master= window,
+    command=connect_wpp,
+    text= "Conectar Whatsapp",
+    text_color="#79ae61",
+    hover= True,
+    hover_color= "black",
+    height=30,
+    width= 80,
+    border_width=2,
+    corner_radius=3,
+    border_color= "#79ae61", 
+    bg_color="#262626",
+    fg_color= "#262626").pack(padx=0, pady=5)
 
 hellotext = tk.CTkLabel(window, text="Bem vindo!", font=("Arial", 16, "bold")).pack(padx=10, pady=50)
 
@@ -77,7 +95,7 @@ btn_select_arquive = tk.CTkButton(window, text="Importar lista de contatos", com
 
 btn_custom_msg = tk.CTkButton(window, text="Mensagem de envio", command=custom_msg).pack(padx=10, pady=10)
 
-btn_send_msg = tk.CTkButton(window, text="Iniciar envio", command=iniciar_envio).pack(padx=10, pady=10)
+btn_send_msg = tk.CTkButton(window, text="Iniciar envio", bg_color="#262626", command=iniciar_envio).pack(padx=10, pady=10)
 
 text_area = scrolledtext.ScrolledText(window, wrap=tk.WORD, width=40, height=10)
 text_area.pack(padx=10, pady=50)
