@@ -74,8 +74,10 @@ def iniciar_envio():
             with open('erros.txt', 'a', newline='', encoding='utf-8') as arquivo:
                 arquivo.write(f'{linha}')
 
-Button_connectwpp = CTkButton(
-    master= window,
+frame2 = CTkFrame(window)
+frame2.pack(expand=True, anchor = NW, padx=5, pady=10)
+Button_connectwpp = tk.CTkButton(
+    master= frame2,
     command=connect_wpp,
     text= "Conectar Whatsapp",
     text_color="#79ae61",
@@ -87,18 +89,27 @@ Button_connectwpp = CTkButton(
     corner_radius=3,
     border_color= "#79ae61", 
     bg_color="#262626",
-    fg_color= "#262626").pack(padx=0, pady=5)
+    compound=LEFT,
+    fg_color= "#262626")
+Button_connectwpp.pack(anchor = S, expand=True, padx=0, pady=0)
 
-hellotext = tk.CTkLabel(window, text="Bem vindo!", font=("Arial", 16, "bold")).pack(padx=10, pady=50)
+hellotext = tk.CTkLabel(window, text="ZapBot", font=("Arial", 24, "bold"))
+hellotext.pack(expand=True, padx=5, pady=10)
 
-btn_select_arquive = tk.CTkButton(window, text="Importar lista de contatos", command=selecionar_arquivo).pack(padx=10, pady=10)
+frame = CTkFrame(window, border_width=0)
+frame.pack(expand=True)
 
-btn_custom_msg = tk.CTkButton(window, text="Mensagem de envio", command=custom_msg).pack(padx=10, pady=10)
+btn_select_arquive = tk.CTkButton(frame, text="Importar lista de contatos", command=selecionar_arquivo)
+btn_select_arquive.pack(anchor = S, expand=True, padx=5, pady=10)
 
-btn_send_msg = tk.CTkButton(window, text="Iniciar envio", bg_color="#262626", command=iniciar_envio).pack(padx=10, pady=10)
+btn_custom_msg = tk.CTkButton(frame, text="Mensagem de envio", command=custom_msg)
+btn_custom_msg.pack(anchor = S, expand=True, padx=5, pady=10)
+
+btn_send_msg = tk.CTkButton(frame, text="Iniciar envio", bg_color="#262626", command=iniciar_envio)
+btn_send_msg.pack(anchor = N, expand=True, padx=5, pady=10)
 
 text_area = scrolledtext.ScrolledText(window, wrap=tk.WORD, width=40, height=10)
-text_area.pack(padx=10, pady=50)
+text_area.pack(expand=True, padx=5, pady=10)
 sys.stdout = StdoutRedirector(text_area)
 
 window.mainloop()
