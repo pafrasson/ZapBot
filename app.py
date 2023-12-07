@@ -3,11 +3,11 @@ from customtkinter import *
 from urllib.parse import quote
 import webbrowser
 from time import sleep
-import pyautogui
 from tkinter import scrolledtext
 import sys
 from io import StringIO
 from selenium import webdriver
+from auto_whatsapp import auto_whatsapp
 
 window = tk.CTk()
 window.geometry("500x500")
@@ -23,8 +23,8 @@ class StdoutRedirector:
         self.text_space.see(tk.END)  # Rola automaticamente para a última linha
         
 def connect_wpp():
-    driver = webdriver.Chrome()
-    driver.get('https://web.whatsapp.com/')
+    link_wpp = f'https://web.whatsapp.com'
+    webbrowser.open(link_wpp)
     
 def selecionar_arquivo():
     selected_archive = filedialog.askopenfilename()
@@ -52,30 +52,34 @@ def custom_msg():
 
 def iniciar_envio():
     txt = gbl_selected_arquive
-    arquivo = open(txt, "r")
+    msg = texto_global
+    numeros = []
+
+# Abre o arquivo em modo de leitura
+    with open(txt, 'r') as arquivo:
+    # Itera sobre cada linha no arquivo
+        for linha in arquivo:
+        # Adiciona a linha ao vetor
+            numeros.append(linha.strip())
+    auto_whatsapp.sendChat(numeros, msg)
+    """
     for linha in arquivo.readlines():
         if linha == "":
             break
         print(f'mensagem enviada para{linha}')
-        msg = texto_global
+        
 
         try:
-            link_wpp = f'https://web.whatsapp.com/send?phone={
-                linha}&text={quote(msg)}'
-            webbrowser.open(link_wpp)
-            sleep(20)
-            seta = pyautogui.locateCenterOnScreen('send_btn.png')
-            sleep(5)
-            pyautogui.click(seta[0], seta[1])
-            sleep(5)
-            pyautogui.hotkey('ctrl' + 'w')
+            print(f'coco {linha}')
         except:
             print(f'nao foi possivel enviar mensagem para {linha}')
             with open('erros.txt', 'a', newline='', encoding='utf-8') as arquivo:
                 arquivo.write(f'{linha}')
+                """
+    print(numeros)
 
 frame2 = CTkFrame(window)
-frame2.pack(expand=True, anchor = NW, padx=5, pady=10)
+frame2.pack(expand=True, anchor = NW, padx=10, pady=10)
 Button_connectwpp = tk.CTkButton(
     master= frame2,
     command=connect_wpp,
