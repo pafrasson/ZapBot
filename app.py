@@ -18,18 +18,15 @@ from PIL import Image
 
 service = Service(ChromeDriverManager().install())
 
-
 def start():
     nav2 = webdriver.Chrome(service=service)
     global nav
     nav = nav2
 
-
 window = tk.CTk()
 window.geometry("500x500")
 window.title("ZapBot by Frass")
 window.iconbitmap('./assets/mainicon.ico')
-
 
 class StdoutRedirector:
     def __init__(self, text_widget):
@@ -39,10 +36,8 @@ class StdoutRedirector:
         self.text_space.insert(tk.END, message)
         self.text_space.see(tk.END)  # Rola automaticamente para a última linha
 
-
 def connect_wpp():
     nav.get('https://web.whatsapp.com')
-
 
 def selecionar_arquivo():
     selected_archive = filedialog.askopenfilename()
@@ -54,6 +49,15 @@ def selecionar_arquivo():
     else:
         print("Nenhum arquivo selecionado")
 
+def selecionar_midia():
+    selected_archive = filedialog.askopenfilename()
+
+    if selected_archive:
+        global gbl_selected_media
+        gbl_selected_media = selected_archive
+        print("Caminho da mídia selecionado:", gbl_selected_media)
+    else:
+        print("Nenhuma mídia selecionado")
 
 def custom_msg():
     nova_janela = tk.CTkToplevel(window)
@@ -70,11 +74,10 @@ def custom_msg():
     btn_save = tk.CTkButton(nova_janela, text="Salvar",
                             command=save).pack(padx=10, pady=10)
 
-
 def iniciar_envio():
     txt = gbl_selected_arquive
     msg = texto_global
-
+    media = gbl_selected_media
     with open(txt, 'r') as arquivo:
 
         for linha in arquivo.readlines():
@@ -93,6 +96,19 @@ def iniciar_envio():
                 button = wait.until(EC.element_to_be_clickable(button_locator))
                 button.click()
                 sleep(5)
+                
+                if media:
+                    clip_icon_locator = (By.CSS_SELECTOR, 'div[data-testid="clip"]')
+                    clip_icon = WebDriverWait(nav, 10).until(EC.element_to_be_clickable(clip_icon_locator))
+                    clip_icon.click()
+
+                    media_option_locator = (By.CSS_SELECTOR, 'input[type="file"]')
+                    media_option = WebDriverWait(nav, 10).until(EC.element_to_be_clickable(media_option_locator))
+                    media_option.send_keys(media)
+                    
+                    button = wait.until(EC.element_to_be_clickable(button_locator))
+                    button.click()
+                    sleep(5)
             except NoSuchElementException as e:
                 print(f'Error finding element: {e}')
             except TimeoutException as e:
@@ -101,7 +117,6 @@ def iniciar_envio():
                 print(f'Unexpected error: {e}')
                 with open('erros.txt', 'a', newline='', encoding='utf-8') as arquivo:
                     arquivo.write(f'{linha}')
-
 
 frame2 = CTkFrame(window)
 frame2.pack(expand=True, anchor=NW, padx=10, pady=10)
@@ -159,6 +174,10 @@ btn_select_arquive.pack(anchor=S, expand=True, padx=5, pady=10)
 btn_custom_msg = tk.CTkButton(
     frame, text="Mensagem de envio", command=custom_msg)
 btn_custom_msg.pack(anchor=S, expand=True, padx=5, pady=10)
+
+btn_select_media = tk.CTkButton(
+    frame, text="Selecionar Mídia", command=selecionar_midia)
+btn_select_media.pack(anchor=S, expand=True, padx=5, pady=10)
 
 btn_send_msg = tk.CTkButton(
     frame, text="Iniciar envio", bg_color="#262626", command=iniciar_envio)
