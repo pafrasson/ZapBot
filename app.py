@@ -7,9 +7,14 @@ from tkinter import scrolledtext
 import sys
 from io import StringIO
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException 
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from PIL import Image, ImageTk
+from PIL import Image
 
 service = Service(ChromeDriverManager().install())
 
@@ -75,15 +80,25 @@ def iniciar_envio():
         for linha in arquivo.readlines():
             if linha == "":
                 break
-            print(f'mensagem enviada para {linha}')
+            print(f'enviando mensagem para {linha}')
 
             try:
                 nav.get(
                     f'https://web.whatsapp.com/send?phone={linha}&text={quote(msg)}')
-                sleep(10)
-                nav.find_element
-            except:
-                print(f'nao foi possivel enviar mensagem para {linha}')
+                sleep(5)
+                print(f'Current URL: {nav.current_url}')
+                 
+                wait = WebDriverWait(nav, 10)
+                button_locator = (By.XPATH, '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span')
+                button = wait.until(EC.element_to_be_clickable(button_locator))
+                button.click()
+                sleep(5)
+            except NoSuchElementException as e:
+                print(f'Error finding element: {e}')
+            except TimeoutException as e:
+                print(f'Timeout waiting for element: {e}')
+            except Exception as e:
+                print(f'Unexpected error: {e}')
                 with open('erros.txt', 'a', newline='', encoding='utf-8') as arquivo:
                     arquivo.write(f'{linha}')
 
